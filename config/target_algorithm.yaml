@@ -1,0 +1,34 @@
+targetAlgorithm: "TEASER" # "G_ICP", "FGR", "GO_ICP", "TEASER", "SONNY" or "SONNY_w_G_ICP", "TEASER_w_G_ICP"
+isVoxelizationOn: true # TEASER: isVoxelizationOn -> true | voxelSize 0.05
+voxelSize: 0.1 # LABS - 0.1 | for kitti - 0.3
+GICP: 
+    maxDist: 0.3 # KETI: 0.2 -> 1.0 # LABS - maxDist => 0.2 | for kitti- interval 1 => 1.5, interval 5 => 6.0  
+    scoreUpperBoundary: 0.25
+    epsilon: 0.003
+    numMaxIter: 1000
+    RANSACIter: 0
+
+NDT:
+    resolution: 0.3
+    epsilon: 0.003
+    scoreUpperBoundary: 0.25
+    stepSize: 0.25
+    numMaxIter: 70
+
+FGR:
+    divFactor: 1.401
+    maxCorrDist: 0.15
+    numIter: 500
+
+TEASER:
+    noiseBound: 0.15 # LABS: 0.15 KITTI: 0.3 # 0.1 0.215 0.464 1.0
+    gncFactor: 1.4
+    costThreshold: 0.001
+    estimatingScaling: false
+    numMaxIter: 100
+    cbar2: 1
+    
+RANSAC:
+   numIter: 10000
+   maxCorrBoundary: 0.2
+

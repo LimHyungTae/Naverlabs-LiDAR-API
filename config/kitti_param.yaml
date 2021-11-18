@@ -1,0 +1,35 @@
+dataDir: "/home/shapelim/dataset/dataset/sequences" # KITTI data location
+sequence: "00" #"2019-04-16_15-35-46"
+saveDir: "/home/shapelim/dummy"
+initIdx: 0
+stopIdx: -1 # If not use, please set the value as "-1"
+interval: 5
+frequency: 100
+windowSize: 1 
+
+extraction_type: 0 # 0: fpfh, 1: spinnet
+fpfhmanager: # Necessary for FGR, TEASER, SONNY!
+    saveDir: "/home/shapelim/dataset/dataset/sequences"
+    scanDir: "/home/shapelim/dataset/dataset/sequences"
+    posePath: "/home/shapelim/dataset/dataset/poses"
+    fpfh_radius: 0.65 #0.6
+    normal_radius: 0.5 #0.5 # should be smaller than "fpfh_radius"
+###################
+# IMPORTANT!!!!! 
+# If the benchmark is not sequential, below param should be false
+usePrematchedKPs: true
+ # IMPORTANT!!! feature flushOn / Off 
+ # If usePrematchedKPs true, it denotes that the test benchmark is sequential; thus, "flushOn" should be false!!
+ # Not seqeuntial case - "flushOn" should be true!
+flushOn: true
+###################
+loop:
+    num_samples: 1000
+    min_radius: 9.0
+    max_radius: 12.0
+    
+rotation:
+    rotAng: 0.0 # degree
+
+
+

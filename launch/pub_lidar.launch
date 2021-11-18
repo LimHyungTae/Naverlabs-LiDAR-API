@@ -1,0 +1,16 @@
+<launch>
+
+<node name="$(anon pub_lidar)" pkg="naverlabs_indoor_lidar_api" type="pub_lidar" output="screen">
+    <rosparam param="/nvlabs/data_path">"05_2350_to_2670_w_interval_2_node.bag"</rosparam>
+    <rosparam param="/nvlabs/target_lidar">"lidar0"</rosparam>
+
+    <rosparam param="/nvlabs/voxelsize">0.2</rosparam>		
+    <rosparam param="/nvlabs/is_voxel_on">false</rosparam>		
+
+    <rosparam param="/nvlabs/init_idx">0</rosparam>
+    <rosparam param="/nvlabs/interval">1</rosparam>
+    <rosparam param="/nvlabs/frequency">10</rosparam>
+
+</node>
+</launch>
+

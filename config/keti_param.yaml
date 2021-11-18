@@ -1,0 +1,20 @@
+dataDir: "/home/shapelim/dataset/dataset/sequences" # KITTI data location
+sequence: "00" #"2019-04-16_15-35-46"
+saveDir: "/home/shapelim/kitti_time"
+initIdx: 0
+stopIdx: -1 # If not use, please set the value as "-1"
+interval: 5
+frequency: 30
+fpfhmanager: # Necessary for FGR, TEASER, SONNY!
+    saveDir: "/home/shapelim/dataset/dataset/sequences/02/fpfh_itv"
+    fpfh_radius: 0.30 #0.6
+    normal_radius: 0.20 #0.5 # should be smaller than "fpfh_radius"
+usePrematchedKPs: true # IMPORTANT!!!!! true / false
+flushOn: false  # IMPORTANT!!! feature flushOn / Off <- If usePrematchedKPs true, than flush should be false!!
+rotation:
+    rotAng: 180.0 # degree
+windowSize: 10
+mapInterval: 4
+scoreThreshold: 0.5
+
+

@@ -1,0 +1,47 @@
+########## Load/save location
+dataDir: "/home/shapelim/dataset/dataset/sequences" # KITTI data location
+dataId: "05" #"2019-04-16_15-35-46"
+saveDir: "/home/shapelim/jungmo_comparison"
+#########
+testMode: "manual" # "loop", "seq", or manual
+loop:
+    numSamples: 1000
+    minRadius: 9.0
+    maxRadius: 12.0
+seq:
+    initIdx: 0
+    stopIdx: -1 # If not use, please set the value as "-1"
+    interval: 5
+
+flags:
+    preprocessing:
+        isVoxelizationOn: true # TEASER: isVoxelizationOn -> true | voxelSize 0.05
+        voxelSize: 0.1 # LABS - 0.1 | for kitti - 0.3
+        rotAug: false
+        rotAng: 0.0 # degree
+    feature:
+        type: "FPFH"  
+        # IMPORTANT!!!!! 
+        # If the benchmark is not sequential, below param should be false
+        usePrematchedKPs: false
+         # IMPORTANT!!! feature flushOn / Off 
+         # If usePrematchedKPs true, it denotes that the test benchmark is sequential; thus, "flushOn" should be false!!
+         # Not seqeuntial case - "flushOn" should be true!
+        flushOn: true
+    useImu: true # only for Quatro (or SONNY)
+    runFineAlignment: false # only for Quatro (or SONNY)
+    runAll: false # "mono" or "all"
+
+fpfhmanager: # Necessary for FGR, TEASER, SONNY!
+    saveDir: "/home/shapelim/dataset/dataset/sequences"
+    scanDir: "/home/shapelim/dataset/dataset/sequences"
+    posePath: "/home/shapelim/dataset/dataset/poses"
+    fpfh_radius: 0.45  # LABS- 0.45 / KITTI- 0.6 -> 0.75 0.75 is better!
+    normal_radius: 0.3 # LABS- 0.3 / KITTI- 0.5 # should be smaller than "fpfh_radius"
+###################
+###################
+
+    
+
+
+

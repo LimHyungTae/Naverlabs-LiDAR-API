@@ -1,0 +1,17 @@
+srcMapPath: "/home/shapelim/dataset/dataset/sequences/00/velodyne/000000.bin"
+tgtMapPath: "/home/shapelim/dataset/dataset/sequences/00/velodyne/000003.bin"
+
+fpfhmanager: 
+    fpfh_radius: 0.65
+    normal_radius: 0.5 # should be smaller than "fpfh_radius"
+voxelSize: 0.3 # LABS - 0.1 | for kitti - 0.3
+isVoxelizationOn: true # TEASER: "isVoxelizationOn" should be true 
+
+
+TEASER:
+    noiseBound: 0.15 # Empirically, voxel_size / 2 < noise bound < voxel_size
+    gncFactor: 1.4
+    costThreshold: 0.005
+    estimatingScaling: true
+    numMaxIter: 100
+    cbar2: 1

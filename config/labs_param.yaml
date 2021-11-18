@@ -1,0 +1,25 @@
+absDir: "/home/shapelim/dataset"
+targetLoc: "HD_B1"
+date: "2019-04-16_15-35-46" #"2019-04-16_15-35-46"
+
+# For preprocessing of registration
+targetLidar: "lidar0" # "lidar0", "lidar1", or "both"
+
+initIdx: 300
+stopIdx: -1 # If not use, please set the value as "-1"
+interval: 5
+frequency: 100
+windowSize: 1 
+
+rotation:
+    rotAng: 0 # degree
+
+fpfhmanager: # Necessary for FGR, TEASER, SONNY!
+    saveDir: "/" # only used when usePrematchedKPs is true
+    loadDir: "/" # only used when usePrematchedKPs is true
+    fpfh_radius: 0.2
+    normal_radius: 0.15 # should be smaller than "fpfh_radius"
+usePrematchedKPs: false
+flushOn: false  # feature flushOn / Off <- If usePrematchedKPs true, than flush should be false!!
+
+

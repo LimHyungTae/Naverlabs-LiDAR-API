@@ -1,12 +1,12 @@
 # NaverLabs Indoor - LiDAR dataset API
 
-* These dataset are obtained in realistic department store environments!
+These dataset are obtained in realistic department store environments!
 
-[[**Paper**]](https://openaccess.thecvf.com/content/CVPR2021/html/Lee_Large-Scale_Localization_Datasets_in_Crowded_Indoor_Spaces_CVPR_2021_paper.html) [[**Video**]](https://www.youtube.com/watch?v=7D08fWAlqzY)
+[[**Paper**]](https://openaccess.thecvf.com/content/CVPR2021/html/Lee_Large-Scale_Localization_Datasets_in_Crowded_Indoor_Spaces_CVPR_2021_paper.html) [[**Related Video**]](https://www.youtube.com/watch?v=7D08fWAlqzY)
 
 ![](materials/lidar.gif)
 
-(This demo video is the case when mode is `both`. Please refer to below instructions)
+(This demo video is the case when the mode is set to `both`. Please refer to below instructions)
 
 ## Descrptions
 
@@ -28,7 +28,7 @@ _____groundtruth.hdf5
 _____map.pcd
 ```
 
-It's complex but you can just load poses and the corresponding lidar data as follows:
+In fact, it's quite complex to parsing data...But don't worry, I did!. You can just load poses and the corresponding lidar data easily as follows:
 
 ```cpp
 /***
@@ -52,6 +52,8 @@ $ roslaunch naverlabs_api lidar_publisher.launch
 ```
 
 Note that **you can choose the lidar type among three modes**, i.e. `lidar0`, `lidar1`, and `both`.
+
+Also, other parameters are in `launch/lidar_publisher.launch`.
 
 ## Applications
 

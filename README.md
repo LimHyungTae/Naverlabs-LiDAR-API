@@ -1,4 +1,4 @@
-# NaverLabs Indoor - LiDAR dataset API
+# NAVER LABS Indoor dataset - LiDAR API
 
 These dataset are obtained in realistic department store environments!
 

@@ -1,0 +1,17 @@
+<launch>
+
+<node name="pub_lidar" pkg="naverlabs_api" type="pub_lidar" output="screen">
+    <rosparam param="/nvlabs/abs_dir">"/media/shapelim/UX960NVMe1/naverlabs/2019-04-16_15-35-46"</rosparam>
+    <!-- target_lidar: ['lidar0' (horizontal), 'lidar1' (vertical), 'both' (concatenated one)-->
+    <rosparam param="/nvlabs/target_lidar">"both"</rosparam> 
+
+    <rosparam param="/nvlabs/voxelsize">0.2</rosparam>		
+    <rosparam param="/nvlabs/is_voxel_on">false</rosparam>		
+
+    <rosparam param="/nvlabs/init_idx">0</rosparam>
+    <rosparam param="/nvlabs/interval">1</rosparam>
+    <rosparam param="/nvlabs/frequency">100</rosparam>
+
+</node>
+</launch>
+

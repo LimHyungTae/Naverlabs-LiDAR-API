@@ -1,4 +1,4 @@
-#include <tools/nvutils.h>
+#include "nvutils.h"
 
 using namespace std;
 
@@ -318,13 +318,6 @@ void writePose(ofstream& FileObj, int srcIdx, int tgtIdx, double score, geometry
 
 Eigen::Matrix4f loadBodyTf4x4(const map<uint64_t, Pose3>& poseMap, const Eigen::Matrix4f& lidar2body, uint64_t keyTs){
     return pose2eigen(poseMap.find(keyTs)->second) * lidar2body.inverse(); // body w.r.t. map
-}
-
-void pcl2teaser(const pcl::PointCloud<PointType>& pcl_raw, teaser::PointCloud& cloud){
-    cloud.clear();
-    for (const auto &pt: pcl_raw.points){
-        cloud.push_back({pt.x, pt.y, pt.z});
-    }
 }
 
 void pcl2eigen(const pcl::PointCloud<PointType>& pcl_raw, Eigen::Matrix<double, 3, Eigen::Dynamic>& cloud){

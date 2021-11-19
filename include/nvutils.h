@@ -1,8 +1,8 @@
 #ifndef NVUTILS_H
 #define NVUTILS_H
 
-#include <map>
 
+#include <map>
 #include <H5Cpp.h>
 #include <boost/multi_array.hpp>
 #include <experimental/filesystem>
@@ -42,12 +42,8 @@ using PointType = pcl::PointXYZ;
 #define FEATURE_EXTRACTION_USING_FPFH 0
 #define FEATURE_EXTRACTION_USING_SPINNET 1
 
-struct sensorInfos {
-    vector<string> ids = {"lidar0", "lidar1"};
-    vector<Pose3> sensorPoses = {Pose3({0.000000, 0.000000, 0.400000, 0.000000, 0.707107, -0.707107, 0.000000}),
-                                 Pose3({-0.017810, 0.002077, 0.853309, 0.507853, 0.494743, -0.501624,
-                                        -0.495670})}; // x,y,z,qw,qx,qy,qz
-};
+
+
 
 struct Pose3 {
     Eigen::Translation3f position;
@@ -65,6 +61,13 @@ struct Pose3 {
     Pose3(const Eigen::Translation3f &tf, const Eigen::Quaternionf &q) :
             position(tf),
             orientation(q) {};
+};
+
+struct sensorInfos {
+    vector<string> ids = {"lidar0", "lidar1"};
+    vector<Pose3> sensorPoses = {Pose3({0.000000, 0.000000, 0.400000, 0.000000, 0.707107, -0.707107, 0.000000}),
+                                             Pose3({-0.017810, 0.002077, 0.853309, 0.507853, 0.494743, -0.501624,
+                                                    -0.495670})}; // x,y,z,qw,qx,qy,qz
 };
 
 //void readAllHdf5(const string& strHdfFileName, std::map<string, map<uint64_t, gtsam::Pose3> >& lidarPosesMap);
@@ -163,8 +166,6 @@ void writePose(ofstream &FileObj, int idx, geometry_msgs::Pose P);
 
 void writePose(ofstream &FileObj, int srcIdx, int tgtIdx, double score, geometry_msgs::Pose P);
 //Eigen::Matrix4f loadBodyTf4x4(const map<uint64_t, gtsam::Pose3>& poseMap, const Eigen::Matrix4f& lidar2body, uint64_t keyTs);
-
-void pcl2teaser(const pcl::PointCloud<PointType> &pcl_raw, teaser::PointCloud &cloud);
 
 void pcl2eigen(const pcl::PointCloud<PointType> &pcl_raw, Eigen::Matrix<double, 3, Eigen::Dynamic> &cloud);
 

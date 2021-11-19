@@ -94,12 +94,6 @@ namespace pose_utils {
         }
 
         std::cout << "Total " << idx_pairs.size() << " pairs of idx are loaded" << std::endl;
-//        std::cout << "Total " << debug_count << " pairs of idx are prepared" << std::endl;
-//        std::cout<<debug_dists[0]<<std::endl;
-//        std::cout<<debug_dists[1]<<std::endl;
-//        std::cout<<debug_dists[2]<<std::endl;
-//        std::cout<<src->points[0].x<<" " <<src->points[0].y<<" " <<src->points[0].z<<std::endl;
-//        std::cout<<src->points[4443].x<<" " <<src->points[4443].y<<" " <<src->points[4443].z<<std::endl;
         return idx_pairs;
     }
 

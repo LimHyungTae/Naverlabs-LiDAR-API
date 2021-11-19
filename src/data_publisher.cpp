@@ -2,107 +2,98 @@
 #include "nvutils.h"
 
 string ABS_DIR, TARGET_LOC, DATE, TARGET_LIDAR, TARGET_ALGORITHM;
-int INIT_IDX, INTERVAL, FREQUENCY;
-bool IS_VOXELIZATION_ON;
-float VOXEL_SIZE;
+int    INIT_IDX, INTERVAL, FREQUENCY;
+bool   IS_VOXELIZATION_ON;
+float  VOXEL_SIZE;
 
-int main(int argc, char **argv)
-{
-    ros::init(argc, argv, "lidar_publisher");
+int main(int argc, char **argv) {
+    ros::init(argc, argv, "pub_lidar");
     ros::NodeHandle nh;
-    nh.param<string>("/nvlabs/data_path", ABS_DIR, "/home/shapelim/dataset");
+    nh.param<string>("/nvlabs/abs_dir", ABS_DIR, "/media/shapelim/UX960NVMe1/naverlabs/2019-04-16_15-35-46");
     nh.param<string>("/nvlabs/target_lidar", TARGET_LIDAR, "lidar0");
 
     nh.param<int>("/nvlabs/init_idx", INIT_IDX, 0);
-    nh.param<int>("/nvlabs/interval", INTERVAL, 5);
+    nh.param<int>("/nvlabs/interval", INTERVAL, 1);
     nh.param<int>("/nvlabs/frequency", FREQUENCY, 10);
 
     nh.param("/nvlabs/is_voxel_on", IS_VOXELIZATION_ON, false);
     nh.param<float>("/nvlabs/voxelsize", VOXEL_SIZE, 0.1); // Setting target
 
-    if (IS_VOXELIZATION_ON){
-        std::cout<<"\033[1;32mVOXELIZATION: "<<VOXEL_SIZE<<"\033[0m"<<std::endl;
+    if (IS_VOXELIZATION_ON) {
+        cout << "\033[1;32mVOXELIZATION: " << VOXEL_SIZE << "\033[0m" << endl;
     }
-    std::cout<<"\033[1;32mInit idx: "<<INIT_IDX<<"\033[0m"<<std::endl;
+    std::cout << "\033[1;32mInit idx: " << INIT_IDX << "\033[0m" << endl;
     if (INTERVAL < 1) throw invalid_argument("Interval should be larger than 0");
 
     // Data parsing
-    string absDir, pcdPath, hdfPath;
-    absDir = ABS_DIR + "/" + TARGET_LOC + "/" + DATE;
-    std::cout<<"\033[1;32mTarget: "<<absDir<<"\033[0m"<<std::endl;
-    pcdPath = absDir + "/pointclouds_data";
-    hdfPath = absDir + "/sensor_trajectory.hdf";
-    std::cout<<"Target pcd path: "<<pcdPath<<std::endl;
-    std::cout<<"Target hdf path: "<<hdfPath<<std::endl;
+    string pcdPath, hdfPath;
+    cout << "\033[1;32mTarget: " << ABS_DIR << "\033[0m" << endl;
+    pcdPath = ABS_DIR + "/pointclouds_data";
+    hdfPath = ABS_DIR + "/groundtruth.hdf5";
+    cout << "Target pcd path: " << pcdPath << endl;
+    cout << "Target hdf path: " << hdfPath << endl;
 
     // Set dataloader for LABS Indoor dataset
     LabsLoader loader = LabsLoader(pcdPath, TARGET_LIDAR, hdfPath, IS_VOXELIZATION_ON, VOXEL_SIZE);
-    std::cout<<"Parse complete!"<<std::endl;
+    int        N      = loader.size();
+    cout << "Parse complete!" << endl;
+    cout << "Total " << N << "data are loaded!" << endl;
 
     // Set ROS visualization publishers
-    ros::Publisher SrcWrtBodyPublisher = nh.advertise<sensor_msgs::PointCloud2>("/src", 100);
+    ros::Publisher SrcWrtBodyPublisher  = nh.advertise<sensor_msgs::PointCloud2>("/src", 100);
     ros::Publisher SrcWrtWorldPublisher = nh.advertise<sensor_msgs::PointCloud2>("/src_wrt_world", 100);
+    ros::Publisher GtPosePublisher = nh.advertise<nav_msgs::Path>("/gtpose", 100);
 
-    ros::Publisher GTPosePublisher = nh.advertise<nav_msgs::Path>("/gtpose",100);
-    ros::Publisher ESTPosePublisher = nh.advertise<nav_msgs::Path>("/estpose",100);
-
-    ros::Rate loop_rate(FREQUENCY);
+    ros::Rate LoopRate(FREQUENCY);
 
     nav_msgs::Path GtPath;
-    nav_msgs::Path EstPath;
-
-    // ------- Initialization --------
-    std::cout<<"On initialization..."<<std::endl;
-    int initIdx = INIT_IDX;
-    string gtOutputPath = absDir + "/gt" + "_" + to_string(INTERVAL) + ".txt";
-    string estOutputPath = absDir + "/" + TARGET_ALGORITHM + "_" + to_string(INTERVAL) + ".txt";
-    string estTimePath = absDir + "/" + TARGET_ALGORITHM  + "_" + to_string(INTERVAL) + "_time.txt";
-    string pitchOutputPath = absDir + "/" + TARGET_ALGORITHM + "_" + to_string(INTERVAL)  + "_rel_pitches.txt";
-    string absPosePath = absDir + "/" + TARGET_ALGORITHM + "_" + to_string(INTERVAL)  + "_abs_errors.txt";
-
-    Eigen::Matrix4f gtBodyTf = loader.pose(initIdx); // body w.r.t. map
-    Eigen::Matrix4f init2origin = gtBodyTf;
-
-    // To set start position as origin for convenience
-    Eigen::Matrix4f gtTfWrtInit = init2origin.inverse() * gtBodyTf;
-    Eigen::Matrix4f estTfWrtInit = gtTfWrtInit; // Set starting pose of estimated poses
-
-    setNavPath(gtTfWrtInit, initIdx, GtPath);
-    setNavPath(estTfWrtInit, initIdx, EstPath);
-    Eigen::Matrix4f estPrevTfWrtInit = estTfWrtInit;
-    // ---------------------------------
-    geometry_msgs::Pose gtP = eigen2geoPose(gtTfWrtInit);
-    geometry_msgs::Pose estP = eigen2geoPose(estTfWrtInit);
-
-    ofstream gtTxt(gtOutputPath);
-    ofstream estTxt(estOutputPath);
-    writePose(gtTxt, initIdx, gtP);
-    writePose(estTxt, initIdx, estP);
-
-    int N = loader.size();
-
-    for (int j = 0; j < idxPairs.size(); ++j) {
+    for (int i = INIT_IDX; i < N; ++i) {
         signal(SIGINT, signal_callback_handler);
-
-
-        int src_idx = idxPairs[j].first;
-        int tgt_idx = idxPairs[j].second;
-
-        std::cout<<tgt_idx<<" / "<< N<<" th operation...   | ";
-
-        Eigen::Matrix4f gt_body_src = loader.pose(src_idx);
-        gtBodyTf = loader.pose(tgt_idx);
-        // To set start poistion as origin for convenience
-        gtTfWrtInit = init2origin.inverse() * gtBodyTf;
-        Eigen::Matrix4f src2target_gt = gtBodyTf.inverse() * gt_body_src;
-
-        // Set source (past) and target (current) data
+        cout << i << " th lidar is published!" << endl;
+        /***
+         * How to load a pointcloud
+         * Point clouds are already transformed w.r.t. body frame
+         * That is, pose * cloud -> cloud w.r.t. world frame
+         */
         pcl::PointCloud<PointType>::Ptr srcCloud(new pcl::PointCloud<PointType>);
-        pcl::PointCloud<PointType>::Ptr tgtCloud(new pcl::PointCloud<PointType>);
+        *srcCloud = *loader.cloud(i);
+        sensor_msgs::PointCloud2 msg = cloud2msg(*srcCloud);
+        SrcWrtBodyPublisher.publish(msg);
 
-        *srcCloud = *loader.cloud(src_idx);
-        *tgtCloud = *loader.cloud(tgt_idx);
-        float opt_time_taken = 0;
+        /***
+         * How to load the i-th pose
+         */
+        Eigen::Matrix4f pose = loader.pose(i);
+        setNavPath(pose, i, GtPath);
+        GtPosePublisher.publish(GtPath);
+
+        ros::spinOnce();
+        LoopRate.sleep();
+    }
+    return 0;
+}
+//    for (int j = 0; j < idxPairs.size(); ++j) {
+//        signal(SIGINT, signal_callback_handler);
+//
+//
+//        int src_idx = idxPairs[j].first;
+//        int tgt_idx = idxPairs[j].second;
+//
+//        std::cout<<tgt_idx<<" / "<< N<<" th operation...   | ";
+//
+//        Eigen::Matrix4f gt_body_src = loader.pose(src_idx);
+//        gtBodyTf = loader.pose(tgt_idx);
+//        // To set start poistion as origin for convenience
+//        gtTfWrtInit = init2origin.inverse() * gtBodyTf;
+//        Eigen::Matrix4f src2target_gt = gtBodyTf.inverse() * gt_body_src;
+//
+//        // Set source (past) and target (current) data
+//        pcl::PointCloud<PointType>::Ptr srcCloud(new pcl::PointCloud<PointType>);
+//        pcl::PointCloud<PointType>::Ptr tgtCloud(new pcl::PointCloud<PointType>);
+//
+//        *srcCloud = *loader.cloud(src_idx);
+//        *tgtCloud = *loader.cloud(tgt_idx);
+//        float opt_time_taken = 0;
 
 //        double time_taken = (double)(end-start)/CLOCKS_PER_SEC;
 //        ofstream estTimeTxt(estTimePath, ios::app);
@@ -132,7 +123,6 @@ int main(int argc, char **argv)
 //
 //        // -------------------------------------------
 //        // Set msgs and publish them
-//        setNavPath(gtTfWrtInit, tgt_idx, gtPath);
 ////        cout<<estCurrTfWrtInit<<endl;
 ////        cout<<estPath.poses.size()<<endl;
 //        setNavPath(estCurrTfWrtInit, tgt_idx, estPath);
@@ -173,7 +163,6 @@ int main(int argc, char **argv)
 //        TgtPublisher.publish(tgtMsg);
 //        AlignPublisher.publish(alignMsg);
 //
-//        GTPosePublisher.publish(gtPath);
 //        ESTPosePublisher.publish(estPath);
 //
 //
@@ -206,5 +195,5 @@ int main(int argc, char **argv)
 //        ros::spinOnce();
 //        loop_rate.sleep();
 //    }
-    return 0;
-}
+//    return 0;
+//}
